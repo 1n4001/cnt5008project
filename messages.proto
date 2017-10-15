@@ -1,0 +1,17 @@
+syntax="proto3";
+
+package proto;
+
+option java_package = "edu.ucf.student.jdavies.cnt5008.proto";
+option java_outer_classname = "Proto";
+
+message Message {
+    bool reliable = 1;
+    enum Mode {
+        ACK = 0;
+        NACK = 1;
+    }
+    Mode mode = 2;
+    uint32 sequence = 3;
+    bytes payload = 4;
+}
