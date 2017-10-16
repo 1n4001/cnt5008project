@@ -8,11 +8,14 @@ option java_multiple_files = true;
 
 message Message {
     bool reliable = 1;
+    bool response = 2;
+    int32 sequence = 3;
+    int32 senderAddress = 4;
+    int32 senderPort = 5;
     enum Mode {
         ACK = 0;
         NACK = 1;
     }
-    Mode mode = 2;
-    uint32 sequence = 3;
-    bytes payload = 4;
+    Mode mode = 6;
+    bytes payload = 8;
 }

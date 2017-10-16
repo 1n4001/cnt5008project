@@ -28,12 +28,13 @@ public final class Proto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\016messages.proto\022\005proto\"|\n\007Message\022\020\n\010re" +
-      "liable\030\001 \001(\010\022!\n\004mode\030\002 \001(\0162\023.proto.Messa" +
-      "ge.Mode\022\020\n\010sequence\030\003 \001(\r\022\017\n\007payload\030\004 \001" +
-      "(\014\"\031\n\004Mode\022\007\n\003ACK\020\000\022\010\n\004NACK\020\001B0\n%edu.ucf" +
-      ".student.jdavies.cnt5008.protoB\005ProtoP\001b" +
-      "\006proto3"
+      "\n\016messages.proto\022\005proto\"\271\001\n\007Message\022\020\n\010r" +
+      "eliable\030\001 \001(\010\022\020\n\010response\030\002 \001(\010\022\020\n\010seque" +
+      "nce\030\003 \001(\005\022\025\n\rsenderAddress\030\004 \001(\005\022\022\n\nsend" +
+      "erPort\030\005 \001(\005\022!\n\004mode\030\006 \001(\0162\023.proto.Messa" +
+      "ge.Mode\022\017\n\007payload\030\010 \001(\014\"\031\n\004Mode\022\007\n\003ACK\020" +
+      "\000\022\010\n\004NACK\020\001B0\n%edu.ucf.student.jdavies.c" +
+      "nt5008.protoB\005ProtoP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -52,7 +53,7 @@ public final class Proto {
     internal_static_proto_Message_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_proto_Message_descriptor,
-        new java.lang.String[] { "Reliable", "Mode", "Sequence", "Payload", });
+        new java.lang.String[] { "Reliable", "Response", "Sequence", "SenderAddress", "SenderPort", "Mode", "Payload", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

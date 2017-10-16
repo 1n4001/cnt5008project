@@ -17,8 +17,11 @@ private static final long serialVersionUID = 0L;
   }
   private Message() {
     reliable_ = false;
-    mode_ = 0;
+    response_ = false;
     sequence_ = 0;
+    senderAddress_ = 0;
+    senderPort_ = 0;
+    mode_ = 0;
     payload_ = com.google.protobuf.ByteString.EMPTY;
   }
 
@@ -56,17 +59,32 @@ private static final long serialVersionUID = 0L;
             break;
           }
           case 16: {
+
+            response_ = input.readBool();
+            break;
+          }
+          case 24: {
+
+            sequence_ = input.readInt32();
+            break;
+          }
+          case 32: {
+
+            senderAddress_ = input.readInt32();
+            break;
+          }
+          case 40: {
+
+            senderPort_ = input.readInt32();
+            break;
+          }
+          case 48: {
             int rawValue = input.readEnum();
 
             mode_ = rawValue;
             break;
           }
-          case 24: {
-
-            sequence_ = input.readUInt32();
-            break;
-          }
-          case 34: {
+          case 66: {
 
             payload_ = input.readBytes();
             break;
@@ -202,35 +220,62 @@ private static final long serialVersionUID = 0L;
     return reliable_;
   }
 
-  public static final int MODE_FIELD_NUMBER = 2;
+  public static final int RESPONSE_FIELD_NUMBER = 2;
+  private boolean response_;
+  /**
+   * <code>bool response = 2;</code>
+   */
+  public boolean getResponse() {
+    return response_;
+  }
+
+  public static final int SEQUENCE_FIELD_NUMBER = 3;
+  private int sequence_;
+  /**
+   * <code>int32 sequence = 3;</code>
+   */
+  public int getSequence() {
+    return sequence_;
+  }
+
+  public static final int SENDERADDRESS_FIELD_NUMBER = 4;
+  private int senderAddress_;
+  /**
+   * <code>int32 senderAddress = 4;</code>
+   */
+  public int getSenderAddress() {
+    return senderAddress_;
+  }
+
+  public static final int SENDERPORT_FIELD_NUMBER = 5;
+  private int senderPort_;
+  /**
+   * <code>int32 senderPort = 5;</code>
+   */
+  public int getSenderPort() {
+    return senderPort_;
+  }
+
+  public static final int MODE_FIELD_NUMBER = 6;
   private int mode_;
   /**
-   * <code>.proto.Message.Mode mode = 2;</code>
+   * <code>.proto.Message.Mode mode = 6;</code>
    */
   public int getModeValue() {
     return mode_;
   }
   /**
-   * <code>.proto.Message.Mode mode = 2;</code>
+   * <code>.proto.Message.Mode mode = 6;</code>
    */
   public edu.ucf.student.jdavies.cnt5008.proto.Message.Mode getMode() {
     edu.ucf.student.jdavies.cnt5008.proto.Message.Mode result = edu.ucf.student.jdavies.cnt5008.proto.Message.Mode.valueOf(mode_);
     return result == null ? edu.ucf.student.jdavies.cnt5008.proto.Message.Mode.UNRECOGNIZED : result;
   }
 
-  public static final int SEQUENCE_FIELD_NUMBER = 3;
-  private int sequence_;
-  /**
-   * <code>uint32 sequence = 3;</code>
-   */
-  public int getSequence() {
-    return sequence_;
-  }
-
-  public static final int PAYLOAD_FIELD_NUMBER = 4;
+  public static final int PAYLOAD_FIELD_NUMBER = 8;
   private com.google.protobuf.ByteString payload_;
   /**
-   * <code>bytes payload = 4;</code>
+   * <code>bytes payload = 8;</code>
    */
   public com.google.protobuf.ByteString getPayload() {
     return payload_;
@@ -251,14 +296,23 @@ private static final long serialVersionUID = 0L;
     if (reliable_ != false) {
       output.writeBool(1, reliable_);
     }
-    if (mode_ != edu.ucf.student.jdavies.cnt5008.proto.Message.Mode.ACK.getNumber()) {
-      output.writeEnum(2, mode_);
+    if (response_ != false) {
+      output.writeBool(2, response_);
     }
     if (sequence_ != 0) {
-      output.writeUInt32(3, sequence_);
+      output.writeInt32(3, sequence_);
+    }
+    if (senderAddress_ != 0) {
+      output.writeInt32(4, senderAddress_);
+    }
+    if (senderPort_ != 0) {
+      output.writeInt32(5, senderPort_);
+    }
+    if (mode_ != edu.ucf.student.jdavies.cnt5008.proto.Message.Mode.ACK.getNumber()) {
+      output.writeEnum(6, mode_);
     }
     if (!payload_.isEmpty()) {
-      output.writeBytes(4, payload_);
+      output.writeBytes(8, payload_);
     }
     unknownFields.writeTo(output);
   }
@@ -272,17 +326,29 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeBoolSize(1, reliable_);
     }
-    if (mode_ != edu.ucf.student.jdavies.cnt5008.proto.Message.Mode.ACK.getNumber()) {
+    if (response_ != false) {
       size += com.google.protobuf.CodedOutputStream
-        .computeEnumSize(2, mode_);
+        .computeBoolSize(2, response_);
     }
     if (sequence_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeUInt32Size(3, sequence_);
+        .computeInt32Size(3, sequence_);
+    }
+    if (senderAddress_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(4, senderAddress_);
+    }
+    if (senderPort_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(5, senderPort_);
+    }
+    if (mode_ != edu.ucf.student.jdavies.cnt5008.proto.Message.Mode.ACK.getNumber()) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeEnumSize(6, mode_);
     }
     if (!payload_.isEmpty()) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBytesSize(4, payload_);
+        .computeBytesSize(8, payload_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -302,9 +368,15 @@ private static final long serialVersionUID = 0L;
     boolean result = true;
     result = result && (getReliable()
         == other.getReliable());
-    result = result && mode_ == other.mode_;
+    result = result && (getResponse()
+        == other.getResponse());
     result = result && (getSequence()
         == other.getSequence());
+    result = result && (getSenderAddress()
+        == other.getSenderAddress());
+    result = result && (getSenderPort()
+        == other.getSenderPort());
+    result = result && mode_ == other.mode_;
     result = result && getPayload()
         .equals(other.getPayload());
     result = result && unknownFields.equals(other.unknownFields);
@@ -321,10 +393,17 @@ private static final long serialVersionUID = 0L;
     hash = (37 * hash) + RELIABLE_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
         getReliable());
-    hash = (37 * hash) + MODE_FIELD_NUMBER;
-    hash = (53 * hash) + mode_;
+    hash = (37 * hash) + RESPONSE_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getResponse());
     hash = (37 * hash) + SEQUENCE_FIELD_NUMBER;
     hash = (53 * hash) + getSequence();
+    hash = (37 * hash) + SENDERADDRESS_FIELD_NUMBER;
+    hash = (53 * hash) + getSenderAddress();
+    hash = (37 * hash) + SENDERPORT_FIELD_NUMBER;
+    hash = (53 * hash) + getSenderPort();
+    hash = (37 * hash) + MODE_FIELD_NUMBER;
+    hash = (53 * hash) + mode_;
     hash = (37 * hash) + PAYLOAD_FIELD_NUMBER;
     hash = (53 * hash) + getPayload().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
@@ -458,9 +537,15 @@ private static final long serialVersionUID = 0L;
       super.clear();
       reliable_ = false;
 
-      mode_ = 0;
+      response_ = false;
 
       sequence_ = 0;
+
+      senderAddress_ = 0;
+
+      senderPort_ = 0;
+
+      mode_ = 0;
 
       payload_ = com.google.protobuf.ByteString.EMPTY;
 
@@ -487,8 +572,11 @@ private static final long serialVersionUID = 0L;
     public edu.ucf.student.jdavies.cnt5008.proto.Message buildPartial() {
       edu.ucf.student.jdavies.cnt5008.proto.Message result = new edu.ucf.student.jdavies.cnt5008.proto.Message(this);
       result.reliable_ = reliable_;
-      result.mode_ = mode_;
+      result.response_ = response_;
       result.sequence_ = sequence_;
+      result.senderAddress_ = senderAddress_;
+      result.senderPort_ = senderPort_;
+      result.mode_ = mode_;
       result.payload_ = payload_;
       onBuilt();
       return result;
@@ -534,11 +622,20 @@ private static final long serialVersionUID = 0L;
       if (other.getReliable() != false) {
         setReliable(other.getReliable());
       }
-      if (other.mode_ != 0) {
-        setModeValue(other.getModeValue());
+      if (other.getResponse() != false) {
+        setResponse(other.getResponse());
       }
       if (other.getSequence() != 0) {
         setSequence(other.getSequence());
+      }
+      if (other.getSenderAddress() != 0) {
+        setSenderAddress(other.getSenderAddress());
+      }
+      if (other.getSenderPort() != 0) {
+        setSenderPort(other.getSenderPort());
+      }
+      if (other.mode_ != 0) {
+        setModeValue(other.getModeValue());
       }
       if (other.getPayload() != com.google.protobuf.ByteString.EMPTY) {
         setPayload(other.getPayload());
@@ -596,15 +693,119 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    private boolean response_ ;
+    /**
+     * <code>bool response = 2;</code>
+     */
+    public boolean getResponse() {
+      return response_;
+    }
+    /**
+     * <code>bool response = 2;</code>
+     */
+    public Builder setResponse(boolean value) {
+      
+      response_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool response = 2;</code>
+     */
+    public Builder clearResponse() {
+      
+      response_ = false;
+      onChanged();
+      return this;
+    }
+
+    private int sequence_ ;
+    /**
+     * <code>int32 sequence = 3;</code>
+     */
+    public int getSequence() {
+      return sequence_;
+    }
+    /**
+     * <code>int32 sequence = 3;</code>
+     */
+    public Builder setSequence(int value) {
+      
+      sequence_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 sequence = 3;</code>
+     */
+    public Builder clearSequence() {
+      
+      sequence_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private int senderAddress_ ;
+    /**
+     * <code>int32 senderAddress = 4;</code>
+     */
+    public int getSenderAddress() {
+      return senderAddress_;
+    }
+    /**
+     * <code>int32 senderAddress = 4;</code>
+     */
+    public Builder setSenderAddress(int value) {
+      
+      senderAddress_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 senderAddress = 4;</code>
+     */
+    public Builder clearSenderAddress() {
+      
+      senderAddress_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private int senderPort_ ;
+    /**
+     * <code>int32 senderPort = 5;</code>
+     */
+    public int getSenderPort() {
+      return senderPort_;
+    }
+    /**
+     * <code>int32 senderPort = 5;</code>
+     */
+    public Builder setSenderPort(int value) {
+      
+      senderPort_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 senderPort = 5;</code>
+     */
+    public Builder clearSenderPort() {
+      
+      senderPort_ = 0;
+      onChanged();
+      return this;
+    }
+
     private int mode_ = 0;
     /**
-     * <code>.proto.Message.Mode mode = 2;</code>
+     * <code>.proto.Message.Mode mode = 6;</code>
      */
     public int getModeValue() {
       return mode_;
     }
     /**
-     * <code>.proto.Message.Mode mode = 2;</code>
+     * <code>.proto.Message.Mode mode = 6;</code>
      */
     public Builder setModeValue(int value) {
       mode_ = value;
@@ -612,14 +813,14 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.proto.Message.Mode mode = 2;</code>
+     * <code>.proto.Message.Mode mode = 6;</code>
      */
     public edu.ucf.student.jdavies.cnt5008.proto.Message.Mode getMode() {
       edu.ucf.student.jdavies.cnt5008.proto.Message.Mode result = edu.ucf.student.jdavies.cnt5008.proto.Message.Mode.valueOf(mode_);
       return result == null ? edu.ucf.student.jdavies.cnt5008.proto.Message.Mode.UNRECOGNIZED : result;
     }
     /**
-     * <code>.proto.Message.Mode mode = 2;</code>
+     * <code>.proto.Message.Mode mode = 6;</code>
      */
     public Builder setMode(edu.ucf.student.jdavies.cnt5008.proto.Message.Mode value) {
       if (value == null) {
@@ -631,7 +832,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.proto.Message.Mode mode = 2;</code>
+     * <code>.proto.Message.Mode mode = 6;</code>
      */
     public Builder clearMode() {
       
@@ -640,41 +841,15 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private int sequence_ ;
-    /**
-     * <code>uint32 sequence = 3;</code>
-     */
-    public int getSequence() {
-      return sequence_;
-    }
-    /**
-     * <code>uint32 sequence = 3;</code>
-     */
-    public Builder setSequence(int value) {
-      
-      sequence_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>uint32 sequence = 3;</code>
-     */
-    public Builder clearSequence() {
-      
-      sequence_ = 0;
-      onChanged();
-      return this;
-    }
-
     private com.google.protobuf.ByteString payload_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>bytes payload = 4;</code>
+     * <code>bytes payload = 8;</code>
      */
     public com.google.protobuf.ByteString getPayload() {
       return payload_;
     }
     /**
-     * <code>bytes payload = 4;</code>
+     * <code>bytes payload = 8;</code>
      */
     public Builder setPayload(com.google.protobuf.ByteString value) {
       if (value == null) {
@@ -686,7 +861,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bytes payload = 4;</code>
+     * <code>bytes payload = 8;</code>
      */
     public Builder clearPayload() {
       

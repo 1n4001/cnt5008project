@@ -13,21 +13,36 @@ public interface MessageOrBuilder extends
   boolean getReliable();
 
   /**
-   * <code>.proto.Message.Mode mode = 2;</code>
+   * <code>bool response = 2;</code>
    */
-  int getModeValue();
-  /**
-   * <code>.proto.Message.Mode mode = 2;</code>
-   */
-  edu.ucf.student.jdavies.cnt5008.proto.Message.Mode getMode();
+  boolean getResponse();
 
   /**
-   * <code>uint32 sequence = 3;</code>
+   * <code>int32 sequence = 3;</code>
    */
   int getSequence();
 
   /**
-   * <code>bytes payload = 4;</code>
+   * <code>int32 senderAddress = 4;</code>
+   */
+  int getSenderAddress();
+
+  /**
+   * <code>int32 senderPort = 5;</code>
+   */
+  int getSenderPort();
+
+  /**
+   * <code>.proto.Message.Mode mode = 6;</code>
+   */
+  int getModeValue();
+  /**
+   * <code>.proto.Message.Mode mode = 6;</code>
+   */
+  edu.ucf.student.jdavies.cnt5008.proto.Message.Mode getMode();
+
+  /**
+   * <code>bytes payload = 8;</code>
    */
   com.google.protobuf.ByteString getPayload();
 }
