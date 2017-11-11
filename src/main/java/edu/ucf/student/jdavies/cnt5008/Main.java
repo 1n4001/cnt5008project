@@ -17,7 +17,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         CommandLine cmdLine = new PosixParser().parse(OPTIONS, args);
-        String optGroup = "230.18.13.1";
+        String optGroup = "230.18.13.1"; // 'R' is 18th letter of alphabet and 'M' is 13th.
         String optPort = "1813";
         String optMode = "ACK";
         if (cmdLine.hasOption("group")) {
