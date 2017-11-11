@@ -13,10 +13,11 @@ public class TestBeaconSocket {
 
     @Test
     public void testBeacon() throws IOException {
+        Protocol.getInstance(); //register protobuf
         HostId hostIdA = HostId.newBuilder().setIp(0x1234).setPort(0xFF01).build();
         HostId hostIdB = HostId.newBuilder().setIp(0x2345).setPort(0xFF02).build();
-        InetAddress beaconAddress = InetAddress.getByName("238.18.13.1");
-        int beaconPort = 7655;
+        InetAddress beaconAddress = InetAddress.getByName("10.0.1.255");
+        int beaconPort = 32000;
 
         CountDownLatch discoverLatchA = new CountDownLatch(1);
         CountDownLatch goneLatchA = new CountDownLatch(1);
