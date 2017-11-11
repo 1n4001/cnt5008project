@@ -10,25 +10,18 @@ public  final class Message extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:proto.Message)
     MessageOrBuilder {
-private static final long serialVersionUID = 0L;
   // Use Message.newBuilder() to construct.
   private Message(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
   private Message() {
-    reliable_ = false;
-    response_ = false;
-    sequence_ = 0;
-    senderAddress_ = 0;
-    senderPort_ = 0;
-    mode_ = 0;
     payload_ = com.google.protobuf.ByteString.EMPTY;
   }
 
   @java.lang.Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
-    return this.unknownFields;
+    return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
   }
   private Message(
       com.google.protobuf.CodedInputStream input,
@@ -36,8 +29,6 @@ private static final long serialVersionUID = 0L;
       throws com.google.protobuf.InvalidProtocolBufferException {
     this();
     int mutable_bitField0_ = 0;
-    com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-        com.google.protobuf.UnknownFieldSet.newBuilder();
     try {
       boolean done = false;
       while (!done) {
@@ -47,44 +38,38 @@ private static final long serialVersionUID = 0L;
             done = true;
             break;
           default: {
-            if (!parseUnknownFieldProto3(
-                input, unknownFields, extensionRegistry, tag)) {
+            if (!input.skipField(tag)) {
               done = true;
             }
             break;
           }
-          case 8: {
+          case 10: {
+            edu.ucf.student.jdavies.cnt5008.proto.HostId.Builder subBuilder = null;
+            if (source_ != null) {
+              subBuilder = source_.toBuilder();
+            }
+            source_ = input.readMessage(edu.ucf.student.jdavies.cnt5008.proto.HostId.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom(source_);
+              source_ = subBuilder.buildPartial();
+            }
 
-            reliable_ = input.readBool();
             break;
           }
-          case 16: {
+          case 18: {
+            edu.ucf.student.jdavies.cnt5008.proto.Header.Builder subBuilder = null;
+            if (header_ != null) {
+              subBuilder = header_.toBuilder();
+            }
+            header_ = input.readMessage(edu.ucf.student.jdavies.cnt5008.proto.Header.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom(header_);
+              header_ = subBuilder.buildPartial();
+            }
 
-            response_ = input.readBool();
             break;
           }
-          case 24: {
-
-            sequence_ = input.readInt32();
-            break;
-          }
-          case 32: {
-
-            senderAddress_ = input.readInt32();
-            break;
-          }
-          case 40: {
-
-            senderPort_ = input.readInt32();
-            break;
-          }
-          case 48: {
-            int rawValue = input.readEnum();
-
-            mode_ = rawValue;
-            break;
-          }
-          case 66: {
+          case 26: {
 
             payload_ = input.readBytes();
             break;
@@ -97,7 +82,6 @@ private static final long serialVersionUID = 0L;
       throw new com.google.protobuf.InvalidProtocolBufferException(
           e).setUnfinishedMessage(this);
     } finally {
-      this.unknownFields = unknownFields.build();
       makeExtensionsImmutable();
     }
   }
@@ -113,169 +97,52 @@ private static final long serialVersionUID = 0L;
             edu.ucf.student.jdavies.cnt5008.proto.Message.class, edu.ucf.student.jdavies.cnt5008.proto.Message.Builder.class);
   }
 
+  public static final int SOURCE_FIELD_NUMBER = 1;
+  private edu.ucf.student.jdavies.cnt5008.proto.HostId source_;
   /**
-   * Protobuf enum {@code proto.Message.Mode}
+   * <code>.proto.HostId source = 1;</code>
    */
-  public enum Mode
-      implements com.google.protobuf.ProtocolMessageEnum {
-    /**
-     * <code>ACK = 0;</code>
-     */
-    ACK(0),
-    /**
-     * <code>NACK = 1;</code>
-     */
-    NACK(1),
-    UNRECOGNIZED(-1),
-    ;
-
-    /**
-     * <code>ACK = 0;</code>
-     */
-    public static final int ACK_VALUE = 0;
-    /**
-     * <code>NACK = 1;</code>
-     */
-    public static final int NACK_VALUE = 1;
-
-
-    public final int getNumber() {
-      if (this == UNRECOGNIZED) {
-        throw new java.lang.IllegalArgumentException(
-            "Can't get the number of an unknown enum value.");
-      }
-      return value;
-    }
-
-    /**
-     * @deprecated Use {@link #forNumber(int)} instead.
-     */
-    @java.lang.Deprecated
-    public static Mode valueOf(int value) {
-      return forNumber(value);
-    }
-
-    public static Mode forNumber(int value) {
-      switch (value) {
-        case 0: return ACK;
-        case 1: return NACK;
-        default: return null;
-      }
-    }
-
-    public static com.google.protobuf.Internal.EnumLiteMap<Mode>
-        internalGetValueMap() {
-      return internalValueMap;
-    }
-    private static final com.google.protobuf.Internal.EnumLiteMap<
-        Mode> internalValueMap =
-          new com.google.protobuf.Internal.EnumLiteMap<Mode>() {
-            public Mode findValueByNumber(int number) {
-              return Mode.forNumber(number);
-            }
-          };
-
-    public final com.google.protobuf.Descriptors.EnumValueDescriptor
-        getValueDescriptor() {
-      return getDescriptor().getValues().get(ordinal());
-    }
-    public final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptorForType() {
-      return getDescriptor();
-    }
-    public static final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptor() {
-      return edu.ucf.student.jdavies.cnt5008.proto.Message.getDescriptor().getEnumTypes().get(0);
-    }
-
-    private static final Mode[] VALUES = values();
-
-    public static Mode valueOf(
-        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-      if (desc.getType() != getDescriptor()) {
-        throw new java.lang.IllegalArgumentException(
-          "EnumValueDescriptor is not for this type.");
-      }
-      if (desc.getIndex() == -1) {
-        return UNRECOGNIZED;
-      }
-      return VALUES[desc.getIndex()];
-    }
-
-    private final int value;
-
-    private Mode(int value) {
-      this.value = value;
-    }
-
-    // @@protoc_insertion_point(enum_scope:proto.Message.Mode)
-  }
-
-  public static final int RELIABLE_FIELD_NUMBER = 1;
-  private boolean reliable_;
-  /**
-   * <code>bool reliable = 1;</code>
-   */
-  public boolean getReliable() {
-    return reliable_;
-  }
-
-  public static final int RESPONSE_FIELD_NUMBER = 2;
-  private boolean response_;
-  /**
-   * <code>bool response = 2;</code>
-   */
-  public boolean getResponse() {
-    return response_;
-  }
-
-  public static final int SEQUENCE_FIELD_NUMBER = 3;
-  private int sequence_;
-  /**
-   * <code>int32 sequence = 3;</code>
-   */
-  public int getSequence() {
-    return sequence_;
-  }
-
-  public static final int SENDERADDRESS_FIELD_NUMBER = 4;
-  private int senderAddress_;
-  /**
-   * <code>int32 senderAddress = 4;</code>
-   */
-  public int getSenderAddress() {
-    return senderAddress_;
-  }
-
-  public static final int SENDERPORT_FIELD_NUMBER = 5;
-  private int senderPort_;
-  /**
-   * <code>int32 senderPort = 5;</code>
-   */
-  public int getSenderPort() {
-    return senderPort_;
-  }
-
-  public static final int MODE_FIELD_NUMBER = 6;
-  private int mode_;
-  /**
-   * <code>.proto.Message.Mode mode = 6;</code>
-   */
-  public int getModeValue() {
-    return mode_;
+  public boolean hasSource() {
+    return source_ != null;
   }
   /**
-   * <code>.proto.Message.Mode mode = 6;</code>
+   * <code>.proto.HostId source = 1;</code>
    */
-  public edu.ucf.student.jdavies.cnt5008.proto.Message.Mode getMode() {
-    edu.ucf.student.jdavies.cnt5008.proto.Message.Mode result = edu.ucf.student.jdavies.cnt5008.proto.Message.Mode.valueOf(mode_);
-    return result == null ? edu.ucf.student.jdavies.cnt5008.proto.Message.Mode.UNRECOGNIZED : result;
+  public edu.ucf.student.jdavies.cnt5008.proto.HostId getSource() {
+    return source_ == null ? edu.ucf.student.jdavies.cnt5008.proto.HostId.getDefaultInstance() : source_;
+  }
+  /**
+   * <code>.proto.HostId source = 1;</code>
+   */
+  public edu.ucf.student.jdavies.cnt5008.proto.HostIdOrBuilder getSourceOrBuilder() {
+    return getSource();
   }
 
-  public static final int PAYLOAD_FIELD_NUMBER = 8;
+  public static final int HEADER_FIELD_NUMBER = 2;
+  private edu.ucf.student.jdavies.cnt5008.proto.Header header_;
+  /**
+   * <code>.proto.Header header = 2;</code>
+   */
+  public boolean hasHeader() {
+    return header_ != null;
+  }
+  /**
+   * <code>.proto.Header header = 2;</code>
+   */
+  public edu.ucf.student.jdavies.cnt5008.proto.Header getHeader() {
+    return header_ == null ? edu.ucf.student.jdavies.cnt5008.proto.Header.getDefaultInstance() : header_;
+  }
+  /**
+   * <code>.proto.Header header = 2;</code>
+   */
+  public edu.ucf.student.jdavies.cnt5008.proto.HeaderOrBuilder getHeaderOrBuilder() {
+    return getHeader();
+  }
+
+  public static final int PAYLOAD_FIELD_NUMBER = 3;
   private com.google.protobuf.ByteString payload_;
   /**
-   * <code>bytes payload = 8;</code>
+   * <code>bytes payload = 3;</code>
    */
   public com.google.protobuf.ByteString getPayload() {
     return payload_;
@@ -293,28 +160,15 @@ private static final long serialVersionUID = 0L;
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (reliable_ != false) {
-      output.writeBool(1, reliable_);
+    if (source_ != null) {
+      output.writeMessage(1, getSource());
     }
-    if (response_ != false) {
-      output.writeBool(2, response_);
-    }
-    if (sequence_ != 0) {
-      output.writeInt32(3, sequence_);
-    }
-    if (senderAddress_ != 0) {
-      output.writeInt32(4, senderAddress_);
-    }
-    if (senderPort_ != 0) {
-      output.writeInt32(5, senderPort_);
-    }
-    if (mode_ != edu.ucf.student.jdavies.cnt5008.proto.Message.Mode.ACK.getNumber()) {
-      output.writeEnum(6, mode_);
+    if (header_ != null) {
+      output.writeMessage(2, getHeader());
     }
     if (!payload_.isEmpty()) {
-      output.writeBytes(8, payload_);
+      output.writeBytes(3, payload_);
     }
-    unknownFields.writeTo(output);
   }
 
   public int getSerializedSize() {
@@ -322,39 +176,23 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (reliable_ != false) {
+    if (source_ != null) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(1, reliable_);
+        .computeMessageSize(1, getSource());
     }
-    if (response_ != false) {
+    if (header_ != null) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBoolSize(2, response_);
-    }
-    if (sequence_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(3, sequence_);
-    }
-    if (senderAddress_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(4, senderAddress_);
-    }
-    if (senderPort_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(5, senderPort_);
-    }
-    if (mode_ != edu.ucf.student.jdavies.cnt5008.proto.Message.Mode.ACK.getNumber()) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeEnumSize(6, mode_);
+        .computeMessageSize(2, getHeader());
     }
     if (!payload_.isEmpty()) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBytesSize(8, payload_);
+        .computeBytesSize(3, payload_);
     }
-    size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
   }
 
+  private static final long serialVersionUID = 0L;
   @java.lang.Override
   public boolean equals(final java.lang.Object obj) {
     if (obj == this) {
@@ -366,20 +204,18 @@ private static final long serialVersionUID = 0L;
     edu.ucf.student.jdavies.cnt5008.proto.Message other = (edu.ucf.student.jdavies.cnt5008.proto.Message) obj;
 
     boolean result = true;
-    result = result && (getReliable()
-        == other.getReliable());
-    result = result && (getResponse()
-        == other.getResponse());
-    result = result && (getSequence()
-        == other.getSequence());
-    result = result && (getSenderAddress()
-        == other.getSenderAddress());
-    result = result && (getSenderPort()
-        == other.getSenderPort());
-    result = result && mode_ == other.mode_;
+    result = result && (hasSource() == other.hasSource());
+    if (hasSource()) {
+      result = result && getSource()
+          .equals(other.getSource());
+    }
+    result = result && (hasHeader() == other.hasHeader());
+    if (hasHeader()) {
+      result = result && getHeader()
+          .equals(other.getHeader());
+    }
     result = result && getPayload()
         .equals(other.getPayload());
-    result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
 
@@ -390,20 +226,14 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    hash = (37 * hash) + RELIABLE_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-        getReliable());
-    hash = (37 * hash) + RESPONSE_FIELD_NUMBER;
-    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-        getResponse());
-    hash = (37 * hash) + SEQUENCE_FIELD_NUMBER;
-    hash = (53 * hash) + getSequence();
-    hash = (37 * hash) + SENDERADDRESS_FIELD_NUMBER;
-    hash = (53 * hash) + getSenderAddress();
-    hash = (37 * hash) + SENDERPORT_FIELD_NUMBER;
-    hash = (53 * hash) + getSenderPort();
-    hash = (37 * hash) + MODE_FIELD_NUMBER;
-    hash = (53 * hash) + mode_;
+    if (hasSource()) {
+      hash = (37 * hash) + SOURCE_FIELD_NUMBER;
+      hash = (53 * hash) + getSource().hashCode();
+    }
+    if (hasHeader()) {
+      hash = (37 * hash) + HEADER_FIELD_NUMBER;
+      hash = (53 * hash) + getHeader().hashCode();
+    }
     hash = (37 * hash) + PAYLOAD_FIELD_NUMBER;
     hash = (53 * hash) + getPayload().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
@@ -535,18 +365,18 @@ private static final long serialVersionUID = 0L;
     }
     public Builder clear() {
       super.clear();
-      reliable_ = false;
-
-      response_ = false;
-
-      sequence_ = 0;
-
-      senderAddress_ = 0;
-
-      senderPort_ = 0;
-
-      mode_ = 0;
-
+      if (sourceBuilder_ == null) {
+        source_ = null;
+      } else {
+        source_ = null;
+        sourceBuilder_ = null;
+      }
+      if (headerBuilder_ == null) {
+        header_ = null;
+      } else {
+        header_ = null;
+        headerBuilder_ = null;
+      }
       payload_ = com.google.protobuf.ByteString.EMPTY;
 
       return this;
@@ -571,12 +401,16 @@ private static final long serialVersionUID = 0L;
 
     public edu.ucf.student.jdavies.cnt5008.proto.Message buildPartial() {
       edu.ucf.student.jdavies.cnt5008.proto.Message result = new edu.ucf.student.jdavies.cnt5008.proto.Message(this);
-      result.reliable_ = reliable_;
-      result.response_ = response_;
-      result.sequence_ = sequence_;
-      result.senderAddress_ = senderAddress_;
-      result.senderPort_ = senderPort_;
-      result.mode_ = mode_;
+      if (sourceBuilder_ == null) {
+        result.source_ = source_;
+      } else {
+        result.source_ = sourceBuilder_.build();
+      }
+      if (headerBuilder_ == null) {
+        result.header_ = header_;
+      } else {
+        result.header_ = headerBuilder_.build();
+      }
       result.payload_ = payload_;
       onBuilt();
       return result;
@@ -587,7 +421,7 @@ private static final long serialVersionUID = 0L;
     }
     public Builder setField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
-        java.lang.Object value) {
+        Object value) {
       return (Builder) super.setField(field, value);
     }
     public Builder clearField(
@@ -600,12 +434,12 @@ private static final long serialVersionUID = 0L;
     }
     public Builder setRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
-        int index, java.lang.Object value) {
+        int index, Object value) {
       return (Builder) super.setRepeatedField(field, index, value);
     }
     public Builder addRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
-        java.lang.Object value) {
+        Object value) {
       return (Builder) super.addRepeatedField(field, value);
     }
     public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -619,28 +453,15 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(edu.ucf.student.jdavies.cnt5008.proto.Message other) {
       if (other == edu.ucf.student.jdavies.cnt5008.proto.Message.getDefaultInstance()) return this;
-      if (other.getReliable() != false) {
-        setReliable(other.getReliable());
+      if (other.hasSource()) {
+        mergeSource(other.getSource());
       }
-      if (other.getResponse() != false) {
-        setResponse(other.getResponse());
-      }
-      if (other.getSequence() != 0) {
-        setSequence(other.getSequence());
-      }
-      if (other.getSenderAddress() != 0) {
-        setSenderAddress(other.getSenderAddress());
-      }
-      if (other.getSenderPort() != 0) {
-        setSenderPort(other.getSenderPort());
-      }
-      if (other.mode_ != 0) {
-        setModeValue(other.getModeValue());
+      if (other.hasHeader()) {
+        mergeHeader(other.getHeader());
       }
       if (other.getPayload() != com.google.protobuf.ByteString.EMPTY) {
         setPayload(other.getPayload());
       }
-      this.mergeUnknownFields(other.unknownFields);
       onChanged();
       return this;
     }
@@ -667,189 +488,249 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private boolean reliable_ ;
+    private edu.ucf.student.jdavies.cnt5008.proto.HostId source_ = null;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        edu.ucf.student.jdavies.cnt5008.proto.HostId, edu.ucf.student.jdavies.cnt5008.proto.HostId.Builder, edu.ucf.student.jdavies.cnt5008.proto.HostIdOrBuilder> sourceBuilder_;
     /**
-     * <code>bool reliable = 1;</code>
+     * <code>.proto.HostId source = 1;</code>
      */
-    public boolean getReliable() {
-      return reliable_;
+    public boolean hasSource() {
+      return sourceBuilder_ != null || source_ != null;
     }
     /**
-     * <code>bool reliable = 1;</code>
+     * <code>.proto.HostId source = 1;</code>
      */
-    public Builder setReliable(boolean value) {
-      
-      reliable_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>bool reliable = 1;</code>
-     */
-    public Builder clearReliable() {
-      
-      reliable_ = false;
-      onChanged();
-      return this;
-    }
-
-    private boolean response_ ;
-    /**
-     * <code>bool response = 2;</code>
-     */
-    public boolean getResponse() {
-      return response_;
-    }
-    /**
-     * <code>bool response = 2;</code>
-     */
-    public Builder setResponse(boolean value) {
-      
-      response_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>bool response = 2;</code>
-     */
-    public Builder clearResponse() {
-      
-      response_ = false;
-      onChanged();
-      return this;
-    }
-
-    private int sequence_ ;
-    /**
-     * <code>int32 sequence = 3;</code>
-     */
-    public int getSequence() {
-      return sequence_;
-    }
-    /**
-     * <code>int32 sequence = 3;</code>
-     */
-    public Builder setSequence(int value) {
-      
-      sequence_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>int32 sequence = 3;</code>
-     */
-    public Builder clearSequence() {
-      
-      sequence_ = 0;
-      onChanged();
-      return this;
-    }
-
-    private int senderAddress_ ;
-    /**
-     * <code>int32 senderAddress = 4;</code>
-     */
-    public int getSenderAddress() {
-      return senderAddress_;
-    }
-    /**
-     * <code>int32 senderAddress = 4;</code>
-     */
-    public Builder setSenderAddress(int value) {
-      
-      senderAddress_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>int32 senderAddress = 4;</code>
-     */
-    public Builder clearSenderAddress() {
-      
-      senderAddress_ = 0;
-      onChanged();
-      return this;
-    }
-
-    private int senderPort_ ;
-    /**
-     * <code>int32 senderPort = 5;</code>
-     */
-    public int getSenderPort() {
-      return senderPort_;
-    }
-    /**
-     * <code>int32 senderPort = 5;</code>
-     */
-    public Builder setSenderPort(int value) {
-      
-      senderPort_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>int32 senderPort = 5;</code>
-     */
-    public Builder clearSenderPort() {
-      
-      senderPort_ = 0;
-      onChanged();
-      return this;
-    }
-
-    private int mode_ = 0;
-    /**
-     * <code>.proto.Message.Mode mode = 6;</code>
-     */
-    public int getModeValue() {
-      return mode_;
-    }
-    /**
-     * <code>.proto.Message.Mode mode = 6;</code>
-     */
-    public Builder setModeValue(int value) {
-      mode_ = value;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>.proto.Message.Mode mode = 6;</code>
-     */
-    public edu.ucf.student.jdavies.cnt5008.proto.Message.Mode getMode() {
-      edu.ucf.student.jdavies.cnt5008.proto.Message.Mode result = edu.ucf.student.jdavies.cnt5008.proto.Message.Mode.valueOf(mode_);
-      return result == null ? edu.ucf.student.jdavies.cnt5008.proto.Message.Mode.UNRECOGNIZED : result;
-    }
-    /**
-     * <code>.proto.Message.Mode mode = 6;</code>
-     */
-    public Builder setMode(edu.ucf.student.jdavies.cnt5008.proto.Message.Mode value) {
-      if (value == null) {
-        throw new NullPointerException();
+    public edu.ucf.student.jdavies.cnt5008.proto.HostId getSource() {
+      if (sourceBuilder_ == null) {
+        return source_ == null ? edu.ucf.student.jdavies.cnt5008.proto.HostId.getDefaultInstance() : source_;
+      } else {
+        return sourceBuilder_.getMessage();
       }
-      
-      mode_ = value.getNumber();
-      onChanged();
+    }
+    /**
+     * <code>.proto.HostId source = 1;</code>
+     */
+    public Builder setSource(edu.ucf.student.jdavies.cnt5008.proto.HostId value) {
+      if (sourceBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        source_ = value;
+        onChanged();
+      } else {
+        sourceBuilder_.setMessage(value);
+      }
+
       return this;
     }
     /**
-     * <code>.proto.Message.Mode mode = 6;</code>
+     * <code>.proto.HostId source = 1;</code>
      */
-    public Builder clearMode() {
-      
-      mode_ = 0;
-      onChanged();
+    public Builder setSource(
+        edu.ucf.student.jdavies.cnt5008.proto.HostId.Builder builderForValue) {
+      if (sourceBuilder_ == null) {
+        source_ = builderForValue.build();
+        onChanged();
+      } else {
+        sourceBuilder_.setMessage(builderForValue.build());
+      }
+
       return this;
+    }
+    /**
+     * <code>.proto.HostId source = 1;</code>
+     */
+    public Builder mergeSource(edu.ucf.student.jdavies.cnt5008.proto.HostId value) {
+      if (sourceBuilder_ == null) {
+        if (source_ != null) {
+          source_ =
+            edu.ucf.student.jdavies.cnt5008.proto.HostId.newBuilder(source_).mergeFrom(value).buildPartial();
+        } else {
+          source_ = value;
+        }
+        onChanged();
+      } else {
+        sourceBuilder_.mergeFrom(value);
+      }
+
+      return this;
+    }
+    /**
+     * <code>.proto.HostId source = 1;</code>
+     */
+    public Builder clearSource() {
+      if (sourceBuilder_ == null) {
+        source_ = null;
+        onChanged();
+      } else {
+        source_ = null;
+        sourceBuilder_ = null;
+      }
+
+      return this;
+    }
+    /**
+     * <code>.proto.HostId source = 1;</code>
+     */
+    public edu.ucf.student.jdavies.cnt5008.proto.HostId.Builder getSourceBuilder() {
+      
+      onChanged();
+      return getSourceFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.proto.HostId source = 1;</code>
+     */
+    public edu.ucf.student.jdavies.cnt5008.proto.HostIdOrBuilder getSourceOrBuilder() {
+      if (sourceBuilder_ != null) {
+        return sourceBuilder_.getMessageOrBuilder();
+      } else {
+        return source_ == null ?
+            edu.ucf.student.jdavies.cnt5008.proto.HostId.getDefaultInstance() : source_;
+      }
+    }
+    /**
+     * <code>.proto.HostId source = 1;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        edu.ucf.student.jdavies.cnt5008.proto.HostId, edu.ucf.student.jdavies.cnt5008.proto.HostId.Builder, edu.ucf.student.jdavies.cnt5008.proto.HostIdOrBuilder> 
+        getSourceFieldBuilder() {
+      if (sourceBuilder_ == null) {
+        sourceBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            edu.ucf.student.jdavies.cnt5008.proto.HostId, edu.ucf.student.jdavies.cnt5008.proto.HostId.Builder, edu.ucf.student.jdavies.cnt5008.proto.HostIdOrBuilder>(
+                getSource(),
+                getParentForChildren(),
+                isClean());
+        source_ = null;
+      }
+      return sourceBuilder_;
+    }
+
+    private edu.ucf.student.jdavies.cnt5008.proto.Header header_ = null;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        edu.ucf.student.jdavies.cnt5008.proto.Header, edu.ucf.student.jdavies.cnt5008.proto.Header.Builder, edu.ucf.student.jdavies.cnt5008.proto.HeaderOrBuilder> headerBuilder_;
+    /**
+     * <code>.proto.Header header = 2;</code>
+     */
+    public boolean hasHeader() {
+      return headerBuilder_ != null || header_ != null;
+    }
+    /**
+     * <code>.proto.Header header = 2;</code>
+     */
+    public edu.ucf.student.jdavies.cnt5008.proto.Header getHeader() {
+      if (headerBuilder_ == null) {
+        return header_ == null ? edu.ucf.student.jdavies.cnt5008.proto.Header.getDefaultInstance() : header_;
+      } else {
+        return headerBuilder_.getMessage();
+      }
+    }
+    /**
+     * <code>.proto.Header header = 2;</code>
+     */
+    public Builder setHeader(edu.ucf.student.jdavies.cnt5008.proto.Header value) {
+      if (headerBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        header_ = value;
+        onChanged();
+      } else {
+        headerBuilder_.setMessage(value);
+      }
+
+      return this;
+    }
+    /**
+     * <code>.proto.Header header = 2;</code>
+     */
+    public Builder setHeader(
+        edu.ucf.student.jdavies.cnt5008.proto.Header.Builder builderForValue) {
+      if (headerBuilder_ == null) {
+        header_ = builderForValue.build();
+        onChanged();
+      } else {
+        headerBuilder_.setMessage(builderForValue.build());
+      }
+
+      return this;
+    }
+    /**
+     * <code>.proto.Header header = 2;</code>
+     */
+    public Builder mergeHeader(edu.ucf.student.jdavies.cnt5008.proto.Header value) {
+      if (headerBuilder_ == null) {
+        if (header_ != null) {
+          header_ =
+            edu.ucf.student.jdavies.cnt5008.proto.Header.newBuilder(header_).mergeFrom(value).buildPartial();
+        } else {
+          header_ = value;
+        }
+        onChanged();
+      } else {
+        headerBuilder_.mergeFrom(value);
+      }
+
+      return this;
+    }
+    /**
+     * <code>.proto.Header header = 2;</code>
+     */
+    public Builder clearHeader() {
+      if (headerBuilder_ == null) {
+        header_ = null;
+        onChanged();
+      } else {
+        header_ = null;
+        headerBuilder_ = null;
+      }
+
+      return this;
+    }
+    /**
+     * <code>.proto.Header header = 2;</code>
+     */
+    public edu.ucf.student.jdavies.cnt5008.proto.Header.Builder getHeaderBuilder() {
+      
+      onChanged();
+      return getHeaderFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.proto.Header header = 2;</code>
+     */
+    public edu.ucf.student.jdavies.cnt5008.proto.HeaderOrBuilder getHeaderOrBuilder() {
+      if (headerBuilder_ != null) {
+        return headerBuilder_.getMessageOrBuilder();
+      } else {
+        return header_ == null ?
+            edu.ucf.student.jdavies.cnt5008.proto.Header.getDefaultInstance() : header_;
+      }
+    }
+    /**
+     * <code>.proto.Header header = 2;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        edu.ucf.student.jdavies.cnt5008.proto.Header, edu.ucf.student.jdavies.cnt5008.proto.Header.Builder, edu.ucf.student.jdavies.cnt5008.proto.HeaderOrBuilder> 
+        getHeaderFieldBuilder() {
+      if (headerBuilder_ == null) {
+        headerBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            edu.ucf.student.jdavies.cnt5008.proto.Header, edu.ucf.student.jdavies.cnt5008.proto.Header.Builder, edu.ucf.student.jdavies.cnt5008.proto.HeaderOrBuilder>(
+                getHeader(),
+                getParentForChildren(),
+                isClean());
+        header_ = null;
+      }
+      return headerBuilder_;
     }
 
     private com.google.protobuf.ByteString payload_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>bytes payload = 8;</code>
+     * <code>bytes payload = 3;</code>
      */
     public com.google.protobuf.ByteString getPayload() {
       return payload_;
     }
     /**
-     * <code>bytes payload = 8;</code>
+     * <code>bytes payload = 3;</code>
      */
     public Builder setPayload(com.google.protobuf.ByteString value) {
       if (value == null) {
@@ -861,7 +742,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>bytes payload = 8;</code>
+     * <code>bytes payload = 3;</code>
      */
     public Builder clearPayload() {
       
@@ -871,12 +752,12 @@ private static final long serialVersionUID = 0L;
     }
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
-      return super.setUnknownFieldsProto3(unknownFields);
+      return this;
     }
 
     public final Builder mergeUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
-      return super.mergeUnknownFields(unknownFields);
+      return this;
     }
 
 

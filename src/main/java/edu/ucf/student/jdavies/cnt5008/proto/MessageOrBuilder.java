@@ -8,41 +8,33 @@ public interface MessageOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>bool reliable = 1;</code>
+   * <code>.proto.HostId source = 1;</code>
    */
-  boolean getReliable();
+  boolean hasSource();
+  /**
+   * <code>.proto.HostId source = 1;</code>
+   */
+  edu.ucf.student.jdavies.cnt5008.proto.HostId getSource();
+  /**
+   * <code>.proto.HostId source = 1;</code>
+   */
+  edu.ucf.student.jdavies.cnt5008.proto.HostIdOrBuilder getSourceOrBuilder();
 
   /**
-   * <code>bool response = 2;</code>
+   * <code>.proto.Header header = 2;</code>
    */
-  boolean getResponse();
+  boolean hasHeader();
+  /**
+   * <code>.proto.Header header = 2;</code>
+   */
+  edu.ucf.student.jdavies.cnt5008.proto.Header getHeader();
+  /**
+   * <code>.proto.Header header = 2;</code>
+   */
+  edu.ucf.student.jdavies.cnt5008.proto.HeaderOrBuilder getHeaderOrBuilder();
 
   /**
-   * <code>int32 sequence = 3;</code>
-   */
-  int getSequence();
-
-  /**
-   * <code>int32 senderAddress = 4;</code>
-   */
-  int getSenderAddress();
-
-  /**
-   * <code>int32 senderPort = 5;</code>
-   */
-  int getSenderPort();
-
-  /**
-   * <code>.proto.Message.Mode mode = 6;</code>
-   */
-  int getModeValue();
-  /**
-   * <code>.proto.Message.Mode mode = 6;</code>
-   */
-  edu.ucf.student.jdavies.cnt5008.proto.Message.Mode getMode();
-
-  /**
-   * <code>bytes payload = 8;</code>
+   * <code>bytes payload = 3;</code>
    */
   com.google.protobuf.ByteString getPayload();
 }

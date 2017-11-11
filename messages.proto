@@ -6,16 +6,35 @@ option java_package = "edu.ucf.student.jdavies.cnt5008.proto";
 option java_outer_classname = "Proto";
 option java_multiple_files = true;
 
-message Message {
-    bool reliable = 1;
-    bool response = 2;
-    int32 sequence = 3;
-    int32 senderAddress = 4;
-    int32 senderPort = 5;
+message HostId {
+    int32 ip = 1;
+    int32 port = 2;
+}
+
+message Beacon {
+    enum Status {
+        PRESENT = 0;
+        GONE = 1;
+    }
+    HostId hostId = 1;
+    Status status = 2;
+}
+
+message Header {
     enum Mode {
         ACK = 0;
         NACK = 1;
     }
-    Mode mode = 6;
-    bytes payload = 8;
+    Mode mode = 1;
+    int32 sequence = 2;
+}
+
+message Response {
+    HostId host = 1;
+}
+
+message Message {
+    HostId source = 1;
+    Header header = 2;
+    bytes payload = 3;
 }
