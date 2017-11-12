@@ -27,6 +27,7 @@ message Header {
     }
     Mode mode = 1;
     int32 sequence = 2;
+    bool response = 3;
 }
 
 message Response {

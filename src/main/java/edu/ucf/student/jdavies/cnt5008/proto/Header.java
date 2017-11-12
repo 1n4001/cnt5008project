@@ -17,6 +17,7 @@ public  final class Header extends
   private Header() {
     mode_ = 0;
     sequence_ = 0;
+    response_ = false;
   }
 
   @java.lang.Override
@@ -53,6 +54,11 @@ public  final class Header extends
           case 16: {
 
             sequence_ = input.readInt32();
+            break;
+          }
+          case 24: {
+
+            response_ = input.readBool();
             break;
           }
         }
@@ -201,6 +207,15 @@ public  final class Header extends
     return sequence_;
   }
 
+  public static final int RESPONSE_FIELD_NUMBER = 3;
+  private boolean response_;
+  /**
+   * <code>bool response = 3;</code>
+   */
+  public boolean getResponse() {
+    return response_;
+  }
+
   private byte memoizedIsInitialized = -1;
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
@@ -219,6 +234,9 @@ public  final class Header extends
     if (sequence_ != 0) {
       output.writeInt32(2, sequence_);
     }
+    if (response_ != false) {
+      output.writeBool(3, response_);
+    }
   }
 
   public int getSerializedSize() {
@@ -233,6 +251,10 @@ public  final class Header extends
     if (sequence_ != 0) {
       size += com.google.protobuf.CodedOutputStream
         .computeInt32Size(2, sequence_);
+    }
+    if (response_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(3, response_);
     }
     memoizedSize = size;
     return size;
@@ -253,6 +275,8 @@ public  final class Header extends
     result = result && mode_ == other.mode_;
     result = result && (getSequence()
         == other.getSequence());
+    result = result && (getResponse()
+        == other.getResponse());
     return result;
   }
 
@@ -267,6 +291,9 @@ public  final class Header extends
     hash = (53 * hash) + mode_;
     hash = (37 * hash) + SEQUENCE_FIELD_NUMBER;
     hash = (53 * hash) + getSequence();
+    hash = (37 * hash) + RESPONSE_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getResponse());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -400,6 +427,8 @@ public  final class Header extends
 
       sequence_ = 0;
 
+      response_ = false;
+
       return this;
     }
 
@@ -424,6 +453,7 @@ public  final class Header extends
       edu.ucf.student.jdavies.cnt5008.proto.Header result = new edu.ucf.student.jdavies.cnt5008.proto.Header(this);
       result.mode_ = mode_;
       result.sequence_ = sequence_;
+      result.response_ = response_;
       onBuilt();
       return result;
     }
@@ -470,6 +500,9 @@ public  final class Header extends
       }
       if (other.getSequence() != 0) {
         setSequence(other.getSequence());
+      }
+      if (other.getResponse() != false) {
+        setResponse(other.getResponse());
       }
       onChanged();
       return this;
@@ -563,6 +596,32 @@ public  final class Header extends
     public Builder clearSequence() {
       
       sequence_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private boolean response_ ;
+    /**
+     * <code>bool response = 3;</code>
+     */
+    public boolean getResponse() {
+      return response_;
+    }
+    /**
+     * <code>bool response = 3;</code>
+     */
+    public Builder setResponse(boolean value) {
+      
+      response_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool response = 3;</code>
+     */
+    public Builder clearResponse() {
+      
+      response_ = false;
       onChanged();
       return this;
     }

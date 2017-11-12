@@ -6,6 +6,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import edu.ucf.student.jdavies.cnt5008.proto.HostId;
+import edu.ucf.student.jdavies.cnt5008.sim.Host;
+import edu.ucf.student.jdavies.cnt5008.sim.Switch;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,9 +16,7 @@ public class TestBeaconSocket {
     @Test
     public void testBeacon() throws IOException {
         Protocol.getInstance(); //register protobuf
-        HostId hostIdA = HostId.newBuilder().setIp(0x1234).setPort(0xFF01).build();
-        HostId hostIdB = HostId.newBuilder().setIp(0x2345).setPort(0xFF02).build();
-        InetAddress beaconAddress = InetAddress.getByName("10.0.1.255");
+        InetAddress beaconAddress = InetAddress.getByName("230.18.13.1");
         int beaconPort = 32000;
 
         CountDownLatch discoverLatchA = new CountDownLatch(1);
@@ -24,8 +24,20 @@ public class TestBeaconSocket {
         CountDownLatch discoverLatchB = new CountDownLatch(1);
         CountDownLatch goneLatchB = new CountDownLatch(1);
 
-        BeaconSocket beaconSocketA = new BeaconSocket(beaconAddress,beaconPort,hostIdA);
-        BeaconSocket beaconSocketB = new BeaconSocket(beaconAddress,beaconPort,hostIdB);
+        InetAddress hostAddressA = InetAddress.getByName("127.0.0.1");
+        InetAddress hostAddressB = InetAddress.getByName("127.0.0.2");
+
+        Switch router = new Switch();
+        Host hostA = new Host(hostAddressA);
+        Host hostB = new Host(hostAddressB);
+        router.attach(hostA);
+        router.attach(hostB);
+
+        BeaconSocket beaconSocketA = new BeaconSocket(hostA,beaconAddress,beaconPort);
+        BeaconSocket beaconSocketB = new BeaconSocket(hostB,beaconAddress,beaconPort);
+
+        HostId hostIdA = beaconSocketA.getHostId();
+        HostId hostIdB = beaconSocketB.getHostId();
 
         beaconSocketA.addListener(new BeaconSocket.Listener() {
             @Override

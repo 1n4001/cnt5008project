@@ -20,4 +20,9 @@ public interface HeaderOrBuilder extends
    * <code>int32 sequence = 2;</code>
    */
   int getSequence();
+
+  /**
+   * <code>bool response = 3;</code>
+   */
+  boolean getResponse();
 }

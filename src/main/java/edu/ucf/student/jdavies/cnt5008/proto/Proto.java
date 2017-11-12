@@ -52,14 +52,14 @@ public final class Proto {
       "\001 \001(\005\022\014\n\004port\030\002 \001(\005\"n\n\006Beacon\022\035\n\006hostId\030" +
       "\001 \001(\0132\r.proto.HostId\022$\n\006status\030\002 \001(\0162\024.p" +
       "roto.Beacon.Status\"\037\n\006Status\022\013\n\007PRESENT\020" +
-      "\000\022\010\n\004GONE\020\001\"W\n\006Header\022 \n\004mode\030\001 \001(\0162\022.pr" +
-      "oto.Header.Mode\022\020\n\010sequence\030\002 \001(\005\"\031\n\004Mod" +
-      "e\022\007\n\003ACK\020\000\022\010\n\004NACK\020\001\"\'\n\010Response\022\033\n\004host" +
-      "\030\001 \001(\0132\r.proto.HostId\"X\n\007Message\022\035\n\006sour" +
-      "ce\030\001 \001(\0132\r.proto.HostId\022\035\n\006header\030\002 \001(\0132" +
-      "\r.proto.Header\022\017\n\007payload\030\003 \001(\014B0\n%edu.u",
-      "cf.student.jdavies.cnt5008.protoB\005ProtoP" +
-      "\001b\006proto3"
+      "\000\022\010\n\004GONE\020\001\"i\n\006Header\022 \n\004mode\030\001 \001(\0162\022.pr" +
+      "oto.Header.Mode\022\020\n\010sequence\030\002 \001(\005\022\020\n\010res" +
+      "ponse\030\003 \001(\010\"\031\n\004Mode\022\007\n\003ACK\020\000\022\010\n\004NACK\020\001\"\'" +
+      "\n\010Response\022\033\n\004host\030\001 \001(\0132\r.proto.HostId\"" +
+      "X\n\007Message\022\035\n\006source\030\001 \001(\0132\r.proto.HostI" +
+      "d\022\035\n\006header\030\002 \001(\0132\r.proto.Header\022\017\n\007payl",
+      "oad\030\003 \001(\014B0\n%edu.ucf.student.jdavies.cnt" +
+      "5008.protoB\005ProtoP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -90,7 +90,7 @@ public final class Proto {
     internal_static_proto_Header_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_proto_Header_descriptor,
-        new java.lang.String[] { "Mode", "Sequence", });
+        new java.lang.String[] { "Mode", "Sequence", "Response", });
     internal_static_proto_Response_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_proto_Response_fieldAccessorTable = new
