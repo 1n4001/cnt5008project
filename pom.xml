@@ -105,7 +105,23 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-       </plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <outputFile>target/${project.artifactId}-all.jar</outputFile>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
     <reporting>
         <plugins>

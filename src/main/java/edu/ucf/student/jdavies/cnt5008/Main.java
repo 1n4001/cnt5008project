@@ -1,13 +1,20 @@
 package edu.ucf.student.jdavies.cnt5008;
 
 import edu.ucf.student.jdavies.cnt5008.sim.Host;
+import edu.ucf.student.jdavies.cnt5008.sim.Switch;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
     private static final Options OPTIONS = new Options();
@@ -16,9 +23,14 @@ public class Main {
         OPTIONS.addOption("group",true,"Multicast Group [230.18.13.1");
         OPTIONS.addOption("port",true,"Multicast Port [default: 1813]");
         OPTIONS.addOption("mode",true,"Reliable Multicast Mode [default: ACK] (ACK or NACK)");
-        OPTIONS.addOption("loss",true,"Packet loss probability [default: 0.01]");
+        OPTIONS.addOption("loss",true,"Packet loss probability [default: 0.00]");
         OPTIONS.addOption("receivers",true,"Number of receivers to run with [default: 10]");
         OPTIONS.addOption("usecase",true,"Use case to test [default: OneToMany] (OneToMany or ManyToMany)");
+    }
+
+    public enum UseCase {
+        OneToMany,
+        ManyToMany
     }
 
     public static void main(String[] args) throws Exception {
@@ -28,6 +40,8 @@ public class Main {
         String optMode = "ACK";
         String optUsecase = "OneToMany";
         String optReceivers = "10";
+        String optLoss = "0.00";
+        String optCount = "1024";
         if (cmdLine.hasOption("help")) {
             System.err.println("Command line options:");
             for (Option option : cmdLine.getOptions()) {
@@ -44,6 +58,12 @@ public class Main {
         if (cmdLine.hasOption("mode")) {
             optMode = cmdLine.getOptionValue("mode");
         }
+        if (cmdLine.hasOption("loss")) {
+            optLoss = cmdLine.getOptionValue("loss");
+        }
+        if (cmdLine.hasOption("count")) {
+            optCount = cmdLine.getOptionValue("count");
+        }
         if (cmdLine.hasOption("receivers")) {
             optReceivers = cmdLine.getOptionValue("receivers");
         }
@@ -53,10 +73,88 @@ public class Main {
         InetAddress group = InetAddress.getByName(optGroup);
         int port = Integer.parseInt(optPort);
         ReliableMode mode = Enum.valueOf(ReliableMode.class,optMode);
+        int numReceivers = Integer.parseInt(optReceivers);
+        numReceivers = Math.max(1,Math.min(numReceivers,253));
+        int messageCount = Integer.parseInt(optCount);
+        float loss = Float.parseFloat(optLoss);
+        UseCase useCase = Enum.valueOf(UseCase.class,optUsecase);
+
+        if (useCase == UseCase.OneToMany) {
+            oneToMany(group,port,mode,loss,numReceivers,messageCount);
+        }
+        else if (useCase == UseCase.ManyToMany) {
+            manyToMany(group,port,mode,loss,numReceivers,messageCount);
+        }
+    }
+
+    public static void oneToMany(InetAddress group, int port, ReliableMode mode, float loss, int numReceivers, int messageCount) throws IOException {
         InetSocketAddress socketAddress = new InetSocketAddress(group,port);
+        InetAddress hostAddressA = InetAddress.getByName("127.0.0.1");
+        Switch router = new Switch();
+        Host hostA = new Host(hostAddressA);
 
-        Host host = new Host(InetAddress.getLocalHost());
+        router.attach(hostA);
+        ReliableMulticastSocket socketA = new ReliableMulticastSocket(hostA,socketAddress, mode);
+        socketA.getSocket().setLossRate(loss);
 
-        ReliableMulticastSocket socket = new ReliableMulticastSocket(host,socketAddress,mode);
+        List<Host> receiverHosts = new ArrayList<>(10);
+        List<ReliableMulticastSocket> receiverSockets = new ArrayList<>(10);
+        for (int i=2;i<numReceivers+2;i++) {
+            InetAddress hostAddressB = InetAddress.getByName("127.0.0."+i);
+            Host hostB = new Host(hostAddressB);
+            router.attach(hostB);
+            receiverHosts.add(hostB);
+            ReliableMulticastSocket socketB = new ReliableMulticastSocket(hostB,socketAddress, mode);
+            socketB.getSocket().setLossRate(loss);
+            receiverSockets.add(socketB);
+        }
+
+
+        if (socketA.getRegistry().getHosts().isEmpty()) {
+            System.err.println("Waiting for source to receive beacon from receivers");
+            while (socketA.getRegistry().getHosts().isEmpty()) {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {}
+            }
+        }
+        for (ReliableMulticastSocket socketB : receiverSockets) {
+            if (socketB.getRegistry().getHosts().isEmpty()) {
+                System.err.println("Waiting for receiver "+socketB.getSocket().getInetAddress()+"'s beacon...");
+                while (socketB.getRegistry().getHosts().isEmpty()) {
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {}
+                }
+            }
+        }
+        long time = System.currentTimeMillis();
+        LinkedBlockingQueue<Future<Void>> futures = new LinkedBlockingQueue<>(4096);
+        for (int i=0;i<messageCount;i++) {
+            try {
+                Thread.sleep(1);
+                futures.add(socketA.send(new byte[512]));
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+        futures.forEach((future) -> {
+            try {
+                if (!future.isDone()) {
+                    future.get(5,TimeUnit.SECONDS);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        time = System.currentTimeMillis()-time;
+        System.err.printf("%s: Reliable send took: %dms%n",mode.toString(),time);
+        System.err.printf("%s: Throughput is %1.2f reliable packets per second%n",mode.toString(),messageCount/(time/1000.0));
+        System.err.printf("%s: Retransmits from source: %d%n",mode.toString(),socketA.getNumberOfRetransmits());
+
+    }
+
+    public static void manyToMany(InetAddress group, int port, ReliableMode mode, float loss, int numReceivers, int messageCount) {
+
     }
 }
