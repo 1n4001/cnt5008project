@@ -55,7 +55,7 @@ public class BeaconSocket implements Runnable {
         byte[] bytes = sender.getInetAddress().getAddress();
         int val = ((bytes[0]&0xFF) << 24) + ((bytes[1]&0xFF) << 16) + ((bytes[2]&0xFF) << 8) + (bytes[3]&0xFF);
         hostId = HostId.newBuilder().setIp(val).setPort(sender.getPort()).build();
-        System.err.println("Created beacon with hostId: "+hostId);
+//        System.err.println("Created beacon with hostId: "+hostId);
     }
 
     public HostId getHostId() {

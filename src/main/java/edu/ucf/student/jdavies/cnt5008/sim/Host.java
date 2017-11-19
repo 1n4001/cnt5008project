@@ -6,6 +6,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -13,6 +16,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Host {
     private InetAddress inetAddress;
+    private Executor executor = Executors.newSingleThreadExecutor();
+//    private Executor executor = Executors.newCachedThreadPool();
     private Map<Integer,Collection<SimSocket>> binds = new ConcurrentHashMap<>();
     private Switch uplink = null;
     private AtomicInteger portCounter = new AtomicInteger(Short.MAX_VALUE);
@@ -33,10 +38,6 @@ public class Host {
         int port = socket.getPort();
         if (port < 0) {
             port = portCounter.getAndIncrement();
-            System.err.println("Allocated port: "+port);
-        }
-        else {
-            System.err.println("Using port: "+port);
         }
         binds.computeIfAbsent(port,Host::newSocketCollection).add(socket);
         return port;
@@ -57,25 +58,19 @@ public class Host {
     }
 
     public void send(DatagramPacket packet) {
-        try {
-            // add some latency like we're on a 10mbit link
-            Thread.sleep(1);
-        } catch (InterruptedException ie) {}
-        if (packet.getAddress() != null && packet.getAddress().equals(inetAddress)) {
-            if (binds.containsKey(packet.getPort())) {
-                binds.get(packet.getPort()).forEach((socket) -> socket.enqueue(packet));
+        executor.execute(() -> {
+            if (packet.getAddress() != null && packet.getAddress().equals(inetAddress)) {
+                if (binds.containsKey(packet.getPort())) {
+                    binds.get(packet.getPort()).forEach((socket) -> socket.enqueue(packet));
+                }
             }
-        }
-        else if (uplink != null) {
-            uplink.send(this,packet);
-        }
+            else if (uplink != null) {
+                uplink.send(this,packet);
+            }
+        });
     }
 
     public void receive(DatagramPacket packet) {
-        try {
-            // add some latency like we're on a 10mbit link
-            Thread.sleep(1);
-        } catch (InterruptedException ie) {}
         if (!binds.containsKey(packet.getPort())) return;
         binds.get(packet.getPort()).forEach((socket) -> socket.enqueue(packet));
     }

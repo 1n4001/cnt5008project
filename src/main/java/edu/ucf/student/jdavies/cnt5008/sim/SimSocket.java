@@ -6,13 +6,16 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.SocketAddress;
+import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class SimSocket extends MulticastSocket {
+    private static final Random RANDOM = new Random();
     private LinkedBlockingQueue<DatagramPacket> incomingQueue = new LinkedBlockingQueue<>(1000);
     private Host host;
     private int port=-1;
     private InetAddress joinedGroup = null;
+    private float lossRate = 0.0f;
 
     public SimSocket(Host host) throws IOException {
         this.host = host;
@@ -23,6 +26,14 @@ public class SimSocket extends MulticastSocket {
         this.host = host;
         this.port = port;
         host.bind(this);
+    }
+
+    public float getLossRate() {
+        return lossRate;
+    }
+
+    public void setLossRate(float lossRate) {
+        this.lossRate = lossRate;
     }
 
     @Override
@@ -54,6 +65,9 @@ public class SimSocket extends MulticastSocket {
 
     void enqueue(DatagramPacket p) {
         try {
+            if (RANDOM.nextFloat()<lossRate) {
+                return; // packet drop
+            }
             incomingQueue.put(p);
         } catch (InterruptedException e) {
             return;
