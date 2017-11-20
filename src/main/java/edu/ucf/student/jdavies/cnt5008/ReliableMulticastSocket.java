@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import com.google.protobuf.ByteString;
 import edu.ucf.student.jdavies.cnt5008.proto.Header;
@@ -31,7 +30,13 @@ import edu.ucf.student.jdavies.cnt5008.proto.Message;
 import edu.ucf.student.jdavies.cnt5008.sim.Host;
 import edu.ucf.student.jdavies.cnt5008.sim.SimSocket;
 
-public class ReliableMulticastSocket implements Runnable, Closeable, BeaconSocket.Listener {
+/**
+ * An implementation of a reliable multicast assignment.  The implementation can run on simulated or on real sockets.
+ * The multicast socket uses the next port up from the selected port to run a beacon/heartbeat service for node discovery
+ * since java does not get notified of who (e.g. list of InetAddress) is currently joined.  This could be taken care
+ * of using some clever JNI or JNA code, but it is beyond the scope of this project.
+ */
+public class ReliableMulticastSocket implements Closeable, BeaconSocket.Listener {
     private static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     private static final int QUEUE_SIZE = 256;
     private SimSocket socket = null;
@@ -55,6 +60,14 @@ public class ReliableMulticastSocket implements Runnable, Closeable, BeaconSocke
     private ScheduledFuture<?> retransmitFuture = null;
     private ReentrantLock lock = new ReentrantLock();
 
+    /**
+     * Construct a new reliable multicast socket.
+     *
+     * @param host simulated host (passing null will use a real host and go out over the network)
+     * @param socketAddress the socket address to bind to
+     * @param mode the reliable multicast mode (ACK or NACK)
+     * @throws IOException
+     */
     public ReliableMulticastSocket(Host host, InetSocketAddress socketAddress, ReliableMode mode) throws IOException {
         this.host = host;
         registry = new BeaconSocket(host,socketAddress.getAddress(),socketAddress.getPort()+1);
@@ -66,20 +79,34 @@ public class ReliableMulticastSocket implements Runnable, Closeable, BeaconSocke
         socket.setReuseAddress(true);
         socket.joinGroup(socketAddress.getAddress());
         this.mode = mode;
-        listenerThread = new Thread(this);
+        listenerThread = new Thread(this::receive);
         listenerThread.start();
         retransmitFuture = executor.scheduleAtFixedRate(this::retransmit,250,250, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Get the registry to find out which hosts are joined.
+     * @return BeaconSocket for discovery.
+     */
     public BeaconSocket getRegistry() {
         return registry;
     }
 
+    /**
+     * Callback for when another host has joined the multicast group
+     * @param hostId identity of the host joining
+     */
     @Override
     public void hostJoined(HostId hostId) {
 
     }
 
+    /**
+     * Callback for when a host has left the multicast group.  Cleans up any pending acknowledgements and completes
+     * any futures if parting host was holding up a packet.
+     *
+     * @param hostId identify of the parting host
+     */
     @Override
     public void hostParted(HostId hostId) {
         for (Iterator<Map.Entry<Integer,Collection<HostId>>> it = pendingAcks.entrySet().iterator(); it.hasNext();) {
@@ -96,6 +123,9 @@ public class ReliableMulticastSocket implements Runnable, Closeable, BeaconSocke
         }
     }
 
+    /**
+     * Close any resources used by this socket.
+     */
     @Override
     public void close() {
         running = false;
@@ -114,26 +144,52 @@ public class ReliableMulticastSocket implements Runnable, Closeable, BeaconSocke
         }
     }
 
+    /**
+     * TODO: if this were published to an application layer it would be implemented
+     * @return message (in-order)
+     */
     public Message receiveMessage() {
         return null;
     }
 
+    /**
+     * Get the operating mode of this reliable multicast socket instance
+     * @return current mode of operation.
+     */
     public ReliableMode getMode() {
         return mode;
     }
 
+    /**
+     * Get the host identifier for this socket
+     * @return host identifier
+     */
     public HostId getHostId() {
         return hostId;
     }
 
+    /**
+     * Get the socket address this socket is bound to
+     * @return bound socket address
+     */
     public InetSocketAddress getSocketAddress() {
         return socketAddress;
     }
 
+    /**
+     * Check to see if the socket is closed
+     * @return true if socket has been closed
+     */
     public boolean isClosed() {
         return closed;
     }
 
+    /**
+     * Send message bytes to group, reliably.
+     * @param payload message bytes to send
+     * @return future which will resolve once packet has been acknowledged (or immediately for NACK)
+     * @throws IOException
+     */
     public Future<Void> send(byte[] payload) throws IOException {
         if (closed) throw new IOException("Socket is closed");
 
@@ -197,15 +253,26 @@ public class ReliableMulticastSocket implements Runnable, Closeable, BeaconSocke
         return future;
     }
 
+    /**
+     * Get the underlying datagram socket used by this reliable multicast socket
+     * @return backing socket
+     */
     public SimSocket getSocket() {
         return socket;
     }
 
+    /**
+     * Get the number of times a packets have been retransmitted
+     * @return number of retransmits
+     */
     public int getNumberOfRetransmits() {
         return retransmits.get();
     }
 
-    public void run() {
+    /**
+     * Main loop for receiving packets and handling NACK/ACK responses.
+     */
+    private void receive() {
         running = true;
         byte[] buffer = new byte[4096];
         DatagramPacket p = new DatagramPacket(buffer,0,buffer.length);
@@ -218,6 +285,9 @@ public class ReliableMulticastSocket implements Runnable, Closeable, BeaconSocke
                 Message message = Message.parseFrom(ByteBuffer.wrap(p.getData(),0,p.getLength()));
                 int sequenceId = message.getHeader().getSequence();
                 if (message.getHeader().getResponse()) {
+                    /**
+                     * This message is a response from another node -- either a NACK or an ACK for a sequence
+                     */
                     if (message.getHeader().getMode() == Header.Mode.NACK){
                         if (verbose) {
                             System.err.println("  -nacked "+message.getHeader().getSequence());
@@ -253,6 +323,9 @@ public class ReliableMulticastSocket implements Runnable, Closeable, BeaconSocke
                     }
                 }
                 else {
+                    /**
+                     * Process reception of a packet from another node
+                     */
                     if (mode == ReliableMode.ACK) {
                         ack(message);
                     }
@@ -311,6 +384,11 @@ public class ReliableMulticastSocket implements Runnable, Closeable, BeaconSocke
         }
     }
 
+    /**
+     * Helper method for sending ACK messages
+     * @param message the message to ACK
+     * @throws IOException
+     */
     private void ack(Message message ) throws IOException {
         if (verbose)
             System.err.println("Acking "+message.getHeader().getSequence());
@@ -327,6 +405,12 @@ public class ReliableMulticastSocket implements Runnable, Closeable, BeaconSocke
         socket.send(ackPacket);
     }
 
+    /**
+     * Ack a specific sequence given a message
+     * @param message message to get host / socket info from
+     * @param ackSequence the seqeunce id to ack
+     * @throws IOException
+     */
     private void ack(Message message, int ackSequence) throws IOException {
         InetSocketAddress ackAddr = new InetSocketAddress(hostIdToInetAddress(message.getSource().getIp()),socketAddress.getPort());
         if (verbose)
@@ -344,6 +428,12 @@ public class ReliableMulticastSocket implements Runnable, Closeable, BeaconSocke
         socket.send(ackPacket);
     }
 
+    /**
+     * Nack a specific message sequence.
+     * @param message the message to nack
+     * @param nackSequence the sequence being nack'd
+     * @throws IOException
+     */
     private void nack(Message message, int nackSequence) throws IOException {
         if (verbose)
             System.err.println("Nacking "+nackSequence);
@@ -360,6 +450,10 @@ public class ReliableMulticastSocket implements Runnable, Closeable, BeaconSocke
         socket.send(ackPacket);
     }
 
+    /**
+     * Mark a sequence as complete
+     * @param sequenceId the sequence id to complete
+     */
     private void complete(int sequenceId) {
         pendingAcks.remove(sequenceId);
         CompletableFuture<Void> f = pendingFutures.remove(sequenceId);
@@ -369,6 +463,10 @@ public class ReliableMulticastSocket implements Runnable, Closeable, BeaconSocke
     }
 
     private static boolean verbose = false;
+
+    /**
+     * Utility thread for retransmitting un-acknowledged packets (e.g. packet or ack may have been dropped)
+     */
     private void retransmit() {
         long now = System.currentTimeMillis();
         for (Iterator<Map.Entry<Integer,Long>> it = pendingTimes.entrySet().iterator(); it.hasNext();) {
@@ -398,6 +496,12 @@ public class ReliableMulticastSocket implements Runnable, Closeable, BeaconSocke
         }
     }
 
+    /**
+     * Utility method for computing a socket address from a host id and port
+     * @param hostId host id
+     * @param port port number
+     * @return socket address with IP from host ID and port from argument
+     */
     public static SocketAddress computeSocketAddress(HostId hostId, int port) {
         try {
             return new InetSocketAddress(hostIdToInetAddress(hostId.getIp()),port);
@@ -406,6 +510,11 @@ public class ReliableMulticastSocket implements Runnable, Closeable, BeaconSocke
         }
     }
 
+    /**
+     * Compute the InetAddress for a given hostId's IP address
+     * @param ip the IP encoded as a 32bit Integer
+     * @return InetSocket address
+     */
     public static InetAddress hostIdToInetAddress(int ip) {
         byte[] bytes=new byte[4];
         bytes[0] = (byte)((ip >> 24) & 0xFF);

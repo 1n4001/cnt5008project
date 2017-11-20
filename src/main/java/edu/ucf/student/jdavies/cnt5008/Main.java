@@ -33,6 +33,12 @@ public class Main {
         ManyToMany
     }
 
+    /**
+     * Main entry point for running reliable multicast simulation.
+     *
+     * @param args command line arguments
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         CommandLine cmdLine = new PosixParser().parse(OPTIONS, args);
         String optGroup = "230.18.13.1"; // 'R' is 18th letter of alphabet and 'M' is 13th.
@@ -87,6 +93,17 @@ public class Main {
         }
     }
 
+    /**
+     * Simulate a one to many scenario.  This could be an example of an audio or video broadcast to many listeners.
+     *
+     * @param group multicast group to join
+     * @param port port for primary traffic (port+1 used for beacon)
+     * @param mode the mode to be used -- Nack or Ack
+     * @param loss the probability of any single packet getting dropped
+     * @param numReceivers the number of receivers (i.e. the 'many')
+     * @param messageCount the number of messages to send out
+     * @throws IOException
+     */
     public static void oneToMany(InetAddress group, int port, ReliableMode mode, float loss, int numReceivers, int messageCount) throws IOException {
         InetSocketAddress socketAddress = new InetSocketAddress(group,port);
         InetAddress hostAddressA = InetAddress.getByName("127.0.0.1");
@@ -154,6 +171,15 @@ public class Main {
 
     }
 
+    /**
+     * Simulate a many-to-many scenario.
+     * @param group
+     * @param port
+     * @param mode
+     * @param loss
+     * @param numReceivers
+     * @param messageCount
+     */
     public static void manyToMany(InetAddress group, int port, ReliableMode mode, float loss, int numReceivers, int messageCount) {
 
     }

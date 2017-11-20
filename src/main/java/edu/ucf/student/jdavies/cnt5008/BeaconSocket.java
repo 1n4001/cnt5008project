@@ -22,6 +22,9 @@ import edu.ucf.student.jdavies.cnt5008.proto.HostId;
 import edu.ucf.student.jdavies.cnt5008.sim.Host;
 import edu.ucf.student.jdavies.cnt5008.sim.SimSocket;
 
+/**
+ * Beacon socket to heartbeat discover and maintain group membership
+ */
 public class BeaconSocket implements Runnable {
     private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private MulticastSocket socket;
@@ -37,9 +40,19 @@ public class BeaconSocket implements Runnable {
     private Set<HostId> knownHosts = new CopyOnWriteArraySet<>(); //use concurrent sets to avoid sync blocks
     private Set<Listener> listeners = new CopyOnWriteArraySet<>();
 
+    /**
+     * Hidden constructor to force usage of the other constructor
+     */
     private BeaconSocket() {
     }
 
+    /**
+     *
+     * @param simHost the simulated host to use (null uses a real network socket)
+     * @param groupAddress group address to heartbeat out to
+     * @param port the port id to bind to
+     * @throws IOException
+     */
     public BeaconSocket(Host simHost, InetAddress groupAddress, int port) throws IOException {
         this();
         this.host = simHost;
@@ -58,14 +71,26 @@ public class BeaconSocket implements Runnable {
 //        System.err.println("Created beacon with hostId: "+hostId);
     }
 
+    /**
+     * Get the host id of this beacon socket
+     * @return host identifier
+     */
     public HostId getHostId() {
         return hostId;
     }
 
+    /**
+     * Get the collection of known hosts joined
+     * @return return current list of hosts
+     */
     public Set<HostId> getHosts() {
         return Collections.unmodifiableSet(knownHosts);
     }
 
+    /**
+     * Start the beacon stocket
+     * @throws IOException
+     */
     public void start() throws IOException {
 
         /**
@@ -98,6 +123,10 @@ public class BeaconSocket implements Runnable {
         send(Beacon.Status.PRESENT);
     }
 
+    /**
+     * Publish beacon status (i.e. PRESENT or GONE)
+     * @param status the status to send out
+     */
     private void send(Beacon.Status status) {
         if (sender == null) return;
 
@@ -124,6 +153,9 @@ public class BeaconSocket implements Runnable {
         }
     }
 
+    /**
+     * Stop the beacon socket.  Sends 'GONE' to notify other listeners.
+     */
     public void stop() {
         running = false;
         if (heartbeater != null) {
@@ -220,14 +252,25 @@ public class BeaconSocket implements Runnable {
         }
     }
 
+    /**
+     * Add a listener to beacon socket
+     * @param listener listener to add
+     */
     public void addListener(Listener listener) {
         listeners.add(listener);
     }
 
+    /**
+     * Remove a listener from the beacon socket
+     * @param listener listener to remove
+     */
     public void removeListener(Listener listener) {
         listeners.remove(listener);
     }
 
+    /**
+     * Listener interface for beacon socket
+     */
     public interface Listener {
         void hostJoined(HostId hostId);
         void hostParted(HostId hostId);
