@@ -128,7 +128,7 @@ public class Main {
 
 
         if (socketA.getRegistry().getHosts().isEmpty()) {
-            System.err.println("Waiting for source to receive beacon from receivers");
+//            System.err.println("Waiting for source to receive beacon from receivers");
             while (socketA.getRegistry().getHosts().isEmpty()) {
                 try {
                     Thread.sleep(50);
@@ -137,7 +137,7 @@ public class Main {
         }
         for (ReliableMulticastSocket socketB : receiverSockets) {
             if (socketB.getRegistry().getHosts().isEmpty()) {
-                System.err.println("Waiting for receiver "+socketB.getSocket().getInetAddress()+"'s beacon...");
+//                System.err.println("Waiting for receiver "+socketB.getSocket().getInetAddress()+"'s beacon...");
                 while (socketB.getRegistry().getHosts().isEmpty()) {
                     try {
                         Thread.sleep(50);
@@ -165,10 +165,8 @@ public class Main {
             }
         });
         time = System.currentTimeMillis()-time;
-        System.err.printf("%s: Reliable send took: %dms%n",mode.toString(),time);
-        System.err.printf("%s: Throughput is %1.2f reliable packets per second%n",mode.toString(),messageCount/(time/1000.0));
-        System.err.printf("%s: Retransmits from source: %d%n",mode.toString(),socketA.getNumberOfRetransmits());
-
+        System.out.printf("%s,%d,%1.2f,%d%n",mode.toString(),time,messageCount/(time/1000.0),socketA.getNumberOfRetransmits());
+        System.exit(0);
     }
 
     /**
@@ -180,7 +178,56 @@ public class Main {
      * @param numReceivers
      * @param messageCount
      */
-    public static void manyToMany(InetAddress group, int port, ReliableMode mode, float loss, int numReceivers, int messageCount) {
+    public static void manyToMany(InetAddress group, int port, ReliableMode mode, float loss, int numReceivers, int messageCount) throws IOException {
+        InetSocketAddress socketAddress = new InetSocketAddress(group,port);
+        Switch router = new Switch();
+        List<Host> receiverHosts = new ArrayList<>(10);
+        List<ReliableMulticastSocket> receiverSockets = new ArrayList<>(10);
+        for (int i=1;i<=numReceivers;i++) {
+            InetAddress hostAddressB = InetAddress.getByName("127.0.0."+i);
+            Host hostB = new Host(hostAddressB);
+            router.attach(hostB);
+            receiverHosts.add(hostB);
+            ReliableMulticastSocket socketB = new ReliableMulticastSocket(hostB,socketAddress, mode);
+            socketB.getSocket().setLossRate(loss);
+            receiverSockets.add(socketB);
+        }
 
+
+        for (ReliableMulticastSocket socketB : receiverSockets) {
+            if (socketB.getRegistry().getHosts().isEmpty()) {
+//                System.err.println("Waiting for receiver "+socketB.getSocket().getInetAddress()+"'s beacon...");
+                while (socketB.getRegistry().getHosts().isEmpty()) {
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {}
+                }
+            }
+        }
+        long time = System.currentTimeMillis();
+        LinkedBlockingQueue<Future<Void>> futures = new LinkedBlockingQueue<>(4096*numReceivers);
+        for (int i=0;i<messageCount;i++) {
+            try {
+                Thread.sleep(1);
+                for (ReliableMulticastSocket socket : receiverSockets) {
+                    futures.add(socket.send(new byte[512]));
+                }
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+        futures.forEach((future) -> {
+            try {
+                if (!future.isDone()) {
+                    future.get(5,TimeUnit.SECONDS);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        time = System.currentTimeMillis()-time;
+        long sum = receiverSockets.stream().mapToInt((socket) -> socket.getNumberOfRetransmits()).sum();
+        System.out.printf("%s,%d,%1.2f,%d%n",mode.toString(),time,messageCount/(time/1000.0),sum);
+        System.exit(0);
     }
 }

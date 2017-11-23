@@ -81,7 +81,8 @@ public class ReliableMulticastSocket implements Closeable, BeaconSocket.Listener
         this.mode = mode;
         listenerThread = new Thread(this::receive);
         listenerThread.start();
-        retransmitFuture = executor.scheduleAtFixedRate(this::retransmit,250,250, TimeUnit.MILLISECONDS);
+        // 60hz check
+        retransmitFuture = executor.scheduleAtFixedRate(this::retransmit,66,66, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -472,18 +473,14 @@ public class ReliableMulticastSocket implements Closeable, BeaconSocket.Listener
         for (Iterator<Map.Entry<Integer,Long>> it = pendingTimes.entrySet().iterator(); it.hasNext();) {
             Map.Entry<Integer,Long> entry = it.next();
             long delay = now - entry.getValue();
-            if (delay < 250) continue;
-            if ((delay/1000) % 5 == 4) {
+            if (delay < 250) continue; //give round trip some time before we blast the packet again.
+            if ((delay/1000) % 10 == 9) {
                 verbose = true;
                 String str = pendingAcks.get(entry.getKey()).stream()
                         .map((hostId) -> computeSocketAddress(hostId,socketAddress.getPort()))
                         .map(SocketAddress::toString)
                         .collect(Collectors.joining(",","[","]"));
                 System.err.println("Still waiting on "+str+" to ack sequence "+entry.getKey());
-            }
-            if (now-entry.getValue() > 30000) {
-                complete(entry.getKey()); // don't get stuck forever
-                continue;
             }
             byte[] bytes = pendingMessages.get(entry.getKey());
             DatagramPacket packet = new DatagramPacket(bytes,0,bytes.length,socketAddress);
